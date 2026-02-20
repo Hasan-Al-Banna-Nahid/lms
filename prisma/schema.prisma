@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  INSTRUCTOR
+  STUDENT
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+}
+
+
+model User {
+  id           String     @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String     @unique
+  password     String
+  role         UserRole   @default(STUDENT)
+  status       UserStatus @default(ACTIVE)
+  profileImage String?
+  
+  courses      Course[]     
+  enrollments  Enrollment[] 
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@map("users")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  courses   Course[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model Course {
+  id           String       @id @default(uuid())
+  title        String
+  slug         String       @unique
+  description  String?      @db.Text
+  thumbnail    String?
+  price        Float        @default(0.0)
+  isPaid       Boolean      @default(false)
+  status       CourseStatus @default(DRAFT)
+  
+  instructorId String
+  instructor   User         @relation(fields: [instructorId], references: [id])
+  
+  categoryId   String
+  category     Category     @relation(fields: [categoryId], references: [id])
+  
+  lessons      Lesson[]
+  enrollments  Enrollment[]
+  
+  isDeleted    Boolean      @default(false) 
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@map("courses")
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  title       String
+  content     String?  @db.Text 
+  videoUrl    String?
+  order       Int     
+  isPreview   Boolean  @default(false)
+  
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  userProgress UserLessonProgress[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("lessons")
+}
+
+model Enrollment {
+  id           String           @id @default(uuid())
+  status       EnrollmentStatus @default(ACTIVE)
+  progress     Float            @default(0.0) 
+  
+  studentId    String
+  student      User             @relation(fields: [studentId], references: [id])
+  
+  courseId     String
+  course       Course           @relation(fields: [courseId], references: [id])
+
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([studentId, courseId]) 
+  @@map("enrollments")
+}
+
+model UserLessonProgress {
+  id          String   @id @default(uuid())
+  isCompleted Boolean  @default(false)
+  
+  studentId   String
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  completedAt DateTime?
+  
+  @@unique([studentId, lessonId])
+  @@map("user_lesson_progress")
+}

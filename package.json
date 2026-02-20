@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@prisma/client": "^7.4.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.3.0",
+    "express": "^5.2.1",
+    "nodemon": "^3.1.13",
+    "prisma": "^7.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.4.1",
+    "dotenv": "^17.3.1"
+  }
+}
