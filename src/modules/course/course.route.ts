@@ -4,6 +4,7 @@ import { protect, restrictTo } from "../../middlewares/auth.middleware";
 
 const router = express.Router();
 
+router.get("/", CourseController.getAll);
 router.post("/", protect, restrictTo("INSTRUCTOR"), CourseController.create);
 router.delete(
   "/:id",
