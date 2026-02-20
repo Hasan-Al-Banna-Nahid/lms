@@ -38,7 +38,7 @@ export const EnrollmentRepository = {
     lessonId: string,
     isCompleted: boolean,
   ) => {
-    return await prisma.lessonProgress.update({
+    return await prisma.userLessonProgress.update({
       where: {
         studentId_lessonId: { studentId, lessonId },
       },
