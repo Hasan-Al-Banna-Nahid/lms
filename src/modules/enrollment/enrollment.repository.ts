@@ -56,7 +56,7 @@ export const EnrollmentRepository = {
 
     const lessonIds = lessonsInCourse.map((l) => l.id);
 
-    const completedLessons = await prisma.lessonProgress.count({
+    const completedLessons = await prisma.userLessonProgress.count({
       where: {
         studentId,
         lessonId: { in: lessonIds },
