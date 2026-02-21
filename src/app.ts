@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1", AuthRoutes);
 app.use("/api/v1", CategoryRoutes);
 app.use("/api/v1/course", CourseRoutes);
-app.use("/api/v1/lession", LessonRoutes);
+app.use("/api/v1/lesson", LessonRoutes);
 app.use("/api/v1", EnrollmentRoutes);
 app.use("/api/v1", AnalyticsRoutes);
 app.use("/api/v1", UserRoutes);
