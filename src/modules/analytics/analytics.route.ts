@@ -7,7 +7,7 @@ const router = express.Router();
 router.get(
   "/dashboard",
   protect,
-  restrictTo("SUPER_ADMIN", "ADMIN"),
+  restrictTo("SUPER_ADMIN", "ADMIN", "STUDENT", "INSTRUCTOR"),
   AnalyticsController.getDashboardData,
 );
 
