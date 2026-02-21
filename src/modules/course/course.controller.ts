@@ -42,4 +42,19 @@ export const CourseController = {
       res.status(500).json({ success: false, message: err.message });
     }
   },
+  getById: async (req: Request, res: Response) => {
+    try {
+      const result = await CourseService.getSingleCourse(req.params.id);
+      res.status(200).json({
+        success: true,
+        message: "Course retrieved successfully",
+        data: result,
+      });
+    } catch (err: any) {
+      res.status(404).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  },
 };

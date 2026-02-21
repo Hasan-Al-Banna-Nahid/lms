@@ -29,4 +29,11 @@ export const CourseService = {
   getAllPublishedCourses: async () => {
     return await CourseRepository.findAll({ status: "PUBLISHED" });
   },
+  getSingleCourse: async (courseId: string) => {
+    const course = await CourseRepository.findById(courseId);
+    if (!course || course.isDeleted) {
+      throw new Error("Course not found or has been removed");
+    }
+    return course;
+  },
 };
