@@ -1,15 +1,23 @@
 import { prisma } from "../../lib/prisma";
 
-export const CategoryRepository = {
-  create: async (name: string) => {
-    return await prisma.category.create({ data: { name } });
-  },
-  findAll: async () => {
-    return await prisma.category.findMany({
-      include: { _count: { select: { courses: true } } },
+export class CategoryRepository {
+  public async create(name: string) {
+    return await prisma.category.create({
+      data: { name },
     });
-  },
-  delete: async (id: string) => {
-    return await prisma.category.delete({ where: { id } });
-  },
-};
+  }
+
+  public async findAll() {
+    return await prisma.category.findMany({
+      include: {
+        _count: { select: { courses: true } },
+      },
+    });
+  }
+
+  public async delete(id: string) {
+    return await prisma.category.delete({
+      where: { id },
+    });
+  }
+}

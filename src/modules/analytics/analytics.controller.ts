@@ -1,34 +1,41 @@
 import { Request, Response } from "express";
 import { AnalyticsService } from "./analytics.service";
 
-export const AnalyticsController = {
-  getDashboardData: async (req: Request, res: Response) => {
+export class AnalyticsController {
+  private analyticsService: AnalyticsService;
+
+  constructor(analyticsService: AnalyticsService) {
+    this.analyticsService = analyticsService;
+  }
+
+  public async getDashboardData(
+    req: Request,
+    res: Response,
+  ): Promise<Response> {
     try {
-      // Ensure req.user exists from your auth middleware
       const user = (req as any).user;
 
       if (!user) {
-        return res
-          .status(401)
-          .json({ success: false, message: "User not authenticated" });
+        return res.status(401).json({
+          success: false,
+          message: "User not authenticated",
+        });
       }
 
-      // Calling the service function
-      const result = await AnalyticsService.getDashboardData({
+      const result = await this.analyticsService.getDashboardData({
         id: user.id,
         role: user.role,
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         data: result,
       });
     } catch (err: any) {
-      console.error("Dashboard Error:", err);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: err.message || "Internal Server Error",
       });
     }
-  },
-};
+  }
+}

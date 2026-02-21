@@ -2,10 +2,16 @@ import { Request, Response } from "express";
 import { UserService } from "./user.service";
 import sendResponse from "../../utils/sendResponse";
 
-export const UserController = {
-  createAdmin: async (req: Request, res: Response) => {
+export class UserController {
+  private userService: UserService;
+
+  constructor(userService: UserService) {
+    this.userService = userService;
+  }
+
+  public createAdmin = async (req: Request, res: Response): Promise<void> => {
     try {
-      const result = await UserService.createAdmin(req.body);
+      const result = await this.userService.createAdmin(req.body);
       sendResponse(res, {
         statusCode: 201,
         success: true,
@@ -15,11 +21,11 @@ export const UserController = {
     } catch (err: any) {
       res.status(400).json({ success: false, message: err.message });
     }
-  },
+  };
 
-  deleteUser: async (req: Request, res: Response) => {
+  public deleteUser = async (req: Request, res: Response): Promise<void> => {
     try {
-      await UserService.deleteUserAccount(req.user!.role, req.params.id);
+      await this.userService.deleteUserAccount(req.user!.role, req.params.id);
       sendResponse(res, {
         statusCode: 200,
         success: true,
@@ -29,5 +35,5 @@ export const UserController = {
     } catch (err: any) {
       res.status(400).json({ success: false, message: err.message });
     }
-  },
-};
+  };
+}

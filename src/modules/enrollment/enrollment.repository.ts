@@ -1,15 +1,15 @@
 import { prisma } from "../../lib/prisma";
 
-export const EnrollmentRepository = {
-  findEnrollment: async (studentId: string, courseId: string) => {
+export class EnrollmentRepository {
+  public async findEnrollment(studentId: string, courseId: string) {
     return await prisma.enrollment.findUnique({
       where: {
         studentId_courseId: { studentId, courseId },
       },
     });
-  },
+  }
 
-  enroll: async (studentId: string, courseId: string) => {
+  public async enroll(studentId: string, courseId: string) {
     return await prisma.$transaction(async (tx) => {
       const enrollment = await tx.enrollment.create({
         data: { studentId, courseId },
@@ -31,31 +31,29 @@ export const EnrollmentRepository = {
 
       return enrollment;
     });
-  },
+  }
 
-  updateProgress: async (
+  public async updateProgress(
     studentId: string,
     lessonId: string,
     isCompleted: boolean,
-  ) => {
+  ) {
     return await prisma.userLessonProgress.update({
       where: {
         studentId_lessonId: { studentId, lessonId },
       },
       data: { isCompleted },
     });
-  },
+  }
 
-  calculateProgress: async (studentId: string, courseId: string) => {
+  public async calculateProgress(studentId: string, courseId: string) {
     const totalLessons = await prisma.lesson.count({ where: { courseId } });
-
     const lessonsInCourse = await prisma.lesson.findMany({
       where: { courseId },
       select: { id: true },
     });
 
     const lessonIds = lessonsInCourse.map((l) => l.id);
-
     const completedLessons = await prisma.userLessonProgress.count({
       where: {
         studentId,
@@ -72,19 +70,19 @@ export const EnrollmentRepository = {
           ? Math.round((completedLessons / totalLessons) * 100)
           : 0,
     };
-  },
+  }
 
-  updateEnrollmentStats: async (
+  public async updateEnrollmentStats(
     studentId: string,
     courseId: string,
     progress: number,
     status: string,
-  ) => {
+  ) {
     return await prisma.enrollment.update({
       where: {
         studentId_courseId: { studentId, courseId },
       },
       data: { progress, status: status as any },
     });
-  },
-};
+  }
+}

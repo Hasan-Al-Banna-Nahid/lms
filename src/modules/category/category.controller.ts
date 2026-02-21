@@ -1,17 +1,40 @@
 import { Request, Response } from "express";
 import { CategoryService } from "./category.service";
 
-export const CategoryController = {
-  create: async (req: Request, res: Response) => {
+export class CategoryController {
+  private categoryService: CategoryService;
+
+  constructor(categoryService: CategoryService) {
+    this.categoryService = categoryService;
+  }
+
+  public async create(req: Request, res: Response): Promise<void> {
     try {
-      const result = await CategoryService.createCategory(req.body);
-      res.status(201).json({ success: true, data: result });
+      const result = await this.categoryService.createCategory(req.body);
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
     } catch (err: any) {
-      res.status(400).json({ success: false, message: err.message });
+      res.status(400).json({
+        success: false,
+        message: err.message,
+      });
     }
-  },
-  getAll: async (req: Request, res: Response) => {
-    const result = await CategoryService.getAllCategories();
-    res.status(200).json({ success: true, data: result });
-  },
-};
+  }
+
+  public async getAll(req: Request, res: Response): Promise<void> {
+    try {
+      const result = await this.categoryService.getAllCategories();
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (err: any) {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
+  }
+}

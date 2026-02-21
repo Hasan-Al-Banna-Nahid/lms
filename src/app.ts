@@ -7,7 +7,6 @@ import { LessonRoutes } from "./modules/lesson/lesson.route";
 import { EnrollmentRoutes } from "./modules/enrollment/enrollment.route";
 import { AnalyticsRoutes } from "./modules/analytics/analytics.route";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
-import { cacheMiddleware } from "./middlewares/cacheMiddleware";
 import { UserRoutes } from "./modules/user/user.route";
 
 const app = express();

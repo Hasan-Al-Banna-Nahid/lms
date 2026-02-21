@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma";
 
-export const CourseRepository = {
-  create: async (instructorId: string, data: any) => {
+export class CourseRepository {
+  public async create(instructorId: string, data: any) {
     return await prisma.course.create({
       data: {
         ...data,
@@ -9,27 +9,27 @@ export const CourseRepository = {
         slug: data.title.toLowerCase().replace(/ /g, "-"),
       },
     });
-  },
+  }
 
-  findById: async (id: string) => {
+  public async findById(id: string) {
     return await prisma.course.findFirst({
       where: { id, isDeleted: false },
       include: { instructor: true, lessons: true },
     });
-  },
+  }
 
-  update: async (id: string, data: any) => {
+  public async update(id: string, data: any) {
     return await prisma.course.update({ where: { id }, data });
-  },
+  }
 
-  softDelete: async (id: string) => {
+  public async softDelete(id: string) {
     return await prisma.course.update({
       where: { id },
       data: { isDeleted: true },
     });
-  },
+  }
 
-  findAll: async (filters: any) => {
+  public async findAll(filters: any) {
     return await prisma.course.findMany({
       where: { ...filters, isDeleted: false },
       include: {
@@ -37,5 +37,5 @@ export const CourseRepository = {
         instructor: { select: { firstName: true, lastName: true } },
       },
     });
-  },
-};
+  }
+}

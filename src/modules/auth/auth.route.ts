@@ -1,10 +1,15 @@
 import express from "express";
 import { AuthController } from "./auth.controller";
-import { registerUserSchema, loginSchema } from "./auth.dto";
+import { AuthService } from "./auth.service";
+import { AuthRepository } from "./auth.repository";
 
 const router = express.Router();
 
-router.post("/register", AuthController.register);
-router.post("/login", AuthController.login);
+const authRepository = new AuthRepository();
+const authService = new AuthService(authRepository);
+const authController = new AuthController(authService);
+
+router.post("/register", (req, res) => authController.register(req, res));
+router.post("/login", (req, res) => authController.login(req, res));
 
 export const AuthRoutes = router;

@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma";
 
-export const AnalyticsRepository = {
-  getGlobalStats: async () => {
+export class AnalyticsRepository {
+  public async getGlobalStats() {
     const totalUsers = await prisma.user.count();
     const totalCourses = await prisma.course.count({
       where: { isDeleted: false },
@@ -9,9 +9,7 @@ export const AnalyticsRepository = {
     const totalEnrollments = await prisma.enrollment.count();
 
     const revenueResult = await prisma.enrollment.aggregate({
-      _sum: {
-        amount: true,
-      },
+      _sum: { amount: true },
     });
 
     return {
@@ -20,25 +18,21 @@ export const AnalyticsRepository = {
       totalEnrollments,
       totalRevenue: revenueResult._sum.amount || 0,
     };
-  },
+  }
 
-  getPopularCourses: async () => {
+  public async getPopularCourses() {
     return await prisma.course.findMany({
       take: 5,
       where: { isDeleted: false, status: "PUBLISHED" },
       include: {
-        _count: {
-          select: { enrollments: true },
-        },
+        _count: { select: { enrollments: true } },
         category: true,
       },
-      orderBy: {
-        enrollments: { _count: "desc" },
-      },
+      orderBy: { enrollments: { _count: "desc" } },
     });
-  },
+  }
 
-  getInstructorStats: async (instructorId: string) => {
+  public async getInstructorStats(instructorId: string) {
     const totalCourses = await prisma.course.count({
       where: { instructorId, isDeleted: false },
     });
@@ -57,9 +51,9 @@ export const AnalyticsRepository = {
       totalStudents,
       totalRevenue: revenueResult._sum.amount || 0,
     };
-  },
+  }
 
-  getInstructorCourses: async (instructorId: string) => {
+  public async getInstructorCourses(instructorId: string) {
     return await prisma.course.findMany({
       where: { instructorId, isDeleted: false },
       include: {
@@ -67,9 +61,9 @@ export const AnalyticsRepository = {
       },
       orderBy: { createdAt: "desc" },
     });
-  },
+  }
 
-  getStudentStats: async (studentId: string) => {
+  public async getStudentStats(studentId: string) {
     const totalEnrolled = await prisma.enrollment.count({
       where: { studentId },
     });
@@ -83,9 +77,9 @@ export const AnalyticsRepository = {
       completedCourses,
       activeCourses: totalEnrolled - completedCourses,
     };
-  },
+  }
 
-  getEnrolledCourses: async (studentId: string) => {
+  public async getEnrolledCourses(studentId: string) {
     return await prisma.enrollment.findMany({
       where: { studentId },
       include: {
@@ -97,5 +91,5 @@ export const AnalyticsRepository = {
       },
       orderBy: { createdAt: "desc" },
     });
-  },
-};
+  }
+}

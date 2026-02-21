@@ -2,20 +2,31 @@ import { LessonRepository } from "./lesson.repository";
 import { CourseRepository } from "../course/course.repository";
 import { createLessonSchema } from "./lesson.dto";
 
-export const LessonService = {
-  addLesson: async (instructorId: string, payload: any) => {
+export class LessonService {
+  private lessonRepository: LessonRepository;
+  private courseRepository: CourseRepository;
+
+  constructor(
+    lessonRepository: LessonRepository,
+    courseRepository: CourseRepository,
+  ) {
+    this.lessonRepository = lessonRepository;
+    this.courseRepository = courseRepository;
+  }
+
+  public async addLesson(instructorId: string, payload: any) {
     const validatedData = createLessonSchema.parse({ body: payload });
     const lessonData = validatedData.body;
 
-    const course = await CourseRepository.findById(lessonData.courseId);
+    const course = await this.courseRepository.findById(lessonData.courseId);
     if (!course || course.instructorId !== instructorId) {
       throw new Error("You are not authorized to add lessons to this course");
     }
 
-    return await LessonRepository.create(lessonData);
-  },
+    return await this.lessonRepository.create(lessonData);
+  }
 
-  getCourseLessons: async (courseId: string) => {
-    return await LessonRepository.findByCourseId(courseId);
-  },
-};
+  public async getCourseLessons(courseId: string) {
+    return await this.lessonRepository.findByCourseId(courseId);
+  }
+}

@@ -1,10 +1,15 @@
 import { prisma } from "../../lib/prisma";
 
-export const AuthRepository = {
-  findUserByEmail: async (email: string) => {
-    return await prisma.user.findUnique({ where: { email } });
-  },
-  createUser: async (data: any) => {
-    return await prisma.user.create({ data });
-  },
-};
+export class AuthRepository {
+  public async findUserByEmail(email: string) {
+    return await prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
+  public async createUser(data: any) {
+    return await prisma.user.create({
+      data,
+    });
+  }
+}

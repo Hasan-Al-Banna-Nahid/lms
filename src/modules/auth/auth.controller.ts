@@ -1,22 +1,40 @@
 import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 
-export const AuthController = {
-  register: async (req: Request, res: Response) => {
-    try {
-      const result = await AuthService.register(req.body);
-      res.status(201).json({ success: true, data: result });
-    } catch (err: any) {
-      res.status(400).json({ success: false, message: err.message });
-    }
-  },
+export class AuthController {
+  private authService: AuthService;
 
-  login: async (req: Request, res: Response) => {
+  constructor(authService: AuthService) {
+    this.authService = authService;
+  }
+
+  public async register(req: Request, res: Response): Promise<void> {
     try {
-      const result = await AuthService.login(req.body);
-      res.status(200).json({ success: true, ...result });
+      const result = await this.authService.register(req.body);
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
     } catch (err: any) {
-      res.status(400).json({ success: false, message: err.message });
+      res.status(400).json({
+        success: false,
+        message: err.message,
+      });
     }
-  },
-};
+  }
+
+  public async login(req: Request, res: Response): Promise<void> {
+    try {
+      const result = await this.authService.login(req.body);
+      res.status(200).json({
+        success: true,
+        ...result,
+      });
+    } catch (err: any) {
+      res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+}

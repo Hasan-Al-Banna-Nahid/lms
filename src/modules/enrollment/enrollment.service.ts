@@ -1,8 +1,14 @@
 import { EnrollmentRepository } from "./enrollment.repository";
 
-export const EnrollmentService = {
-  enrollInCourse: async (studentId: string, courseId: string) => {
-    const isEnrolled = await EnrollmentRepository.findEnrollment(
+export class EnrollmentService {
+  private repository: EnrollmentRepository;
+
+  constructor(repository: EnrollmentRepository) {
+    this.repository = repository;
+  }
+
+  public async enrollInCourse(studentId: string, courseId: string) {
+    const isEnrolled = await this.repository.findEnrollment(
       studentId,
       courseId,
     );
@@ -10,28 +16,25 @@ export const EnrollmentService = {
       throw new Error("You are already enrolled in this course");
     }
 
-    return await EnrollmentRepository.enroll(studentId, courseId);
-  },
+    return await this.repository.enroll(studentId, courseId);
+  }
 
-  updateLessonProgress: async (
+  public async updateLessonProgress(
     studentId: string,
     courseId: string,
     lessonId: string,
     isCompleted: boolean,
-  ) => {
-    await EnrollmentRepository.updateProgress(studentId, lessonId, isCompleted);
+  ) {
+    await this.repository.updateProgress(studentId, lessonId, isCompleted);
 
-    const stats = await EnrollmentRepository.calculateProgress(
-      studentId,
-      courseId,
-    );
+    const stats = await this.repository.calculateProgress(studentId, courseId);
     const status = stats.percentage === 100 ? "COMPLETED" : "ACTIVE";
 
-    return await EnrollmentRepository.updateEnrollmentStats(
+    return await this.repository.updateEnrollmentStats(
       studentId,
       courseId,
       stats.percentage,
       status,
     );
-  },
-};
+  }
+}

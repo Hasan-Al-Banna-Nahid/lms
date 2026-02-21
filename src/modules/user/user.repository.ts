@@ -1,11 +1,11 @@
 import { prisma } from "../../lib/prisma";
 
-export const UserRepository = {
-  createUser: async (data: any) => {
+export class UserRepository {
+  public async createUser(data: any) {
     return await prisma.user.create({ data });
-  },
+  }
 
-  getAllUsers: async (filters: any) => {
+  public async getAllUsers(filters: any) {
     return await prisma.user.findMany({
       where: { ...filters, isDeleted: false },
       select: {
@@ -18,19 +18,19 @@ export const UserRepository = {
         createdAt: true,
       },
     });
-  },
+  }
 
-  updateUserStatus: async (id: string, status: string) => {
+  public async updateUserStatus(id: string, status: string) {
     return await prisma.user.update({
       where: { id },
       data: { status: status as any },
     });
-  },
+  }
 
-  softDeleteUser: async (id: string) => {
+  public async softDeleteUser(id: string) {
     return await prisma.user.update({
       where: { id },
       data: { isDeleted: true },
     });
-  },
-};
+  }
+}

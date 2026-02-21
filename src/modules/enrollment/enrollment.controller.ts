@@ -1,10 +1,16 @@
 import { Request, Response } from "express";
 import { EnrollmentService } from "./enrollment.service";
 
-export const EnrollmentController = {
-  enroll: async (req: Request, res: Response) => {
+export class EnrollmentController {
+  private enrollmentService: EnrollmentService;
+
+  constructor(enrollmentService: EnrollmentService) {
+    this.enrollmentService = enrollmentService;
+  }
+
+  public enroll = async (req: Request, res: Response): Promise<void> => {
     try {
-      const result = await EnrollmentService.enrollInCourse(
+      const result = await this.enrollmentService.enrollInCourse(
         req.user!.id,
         req.body.courseId,
       );
@@ -16,13 +22,16 @@ export const EnrollmentController = {
     } catch (err: any) {
       res.status(400).json({ success: false, message: err.message });
     }
-  },
+  };
 
-  updateProgress: async (req: Request, res: Response) => {
+  public updateProgress = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
     try {
       const { courseId } = req.params;
       const { lessonId, isCompleted } = req.body;
-      const result = await EnrollmentService.updateLessonProgress(
+      const result = await this.enrollmentService.updateLessonProgress(
         req.user!.id,
         courseId,
         lessonId,
@@ -32,5 +41,5 @@ export const EnrollmentController = {
     } catch (err: any) {
       res.status(400).json({ success: false, message: err.message });
     }
-  },
-};
+  };
+}
