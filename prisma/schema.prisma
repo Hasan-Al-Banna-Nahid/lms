@@ -116,7 +116,7 @@ model Enrollment {
   id           String           @id @default(uuid())
   status       EnrollmentStatus @default(ACTIVE)
   progress     Float            @default(0.0) 
-  
+  amount    Float    @default(0.0)
   studentId    String
   student      User             @relation(fields: [studentId], references: [id])
   
