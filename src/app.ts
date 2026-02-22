@@ -13,6 +13,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
+  "https://lms-frontend-azure-nu.vercel.app",
 
   process.env.FRONTEND_URL, // From environment
 ].filter(Boolean);
