@@ -47,7 +47,7 @@ model User {
   role         UserRole   @default(STUDENT)
   status       UserStatus @default(ACTIVE)
   profileImage String?
-  
+  isDeleted    Boolean  @default(false)
   courses      Course[]     
   enrollments  Enrollment[] 
   

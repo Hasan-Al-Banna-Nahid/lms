@@ -7,7 +7,8 @@ export class UserRepository {
 
   public async getAllUsers(filters: any) {
     return await prisma.user.findMany({
-      where: { ...filters, isDeleted: false },
+      // Remove isDeleted if it's not in your schema.prisma
+      where: { ...filters },
       select: {
         id: true,
         firstName: true,
@@ -28,9 +29,10 @@ export class UserRepository {
   }
 
   public async softDeleteUser(id: string) {
-    return await prisma.user.update({
+    // If isDeleted doesn't exist, use delete (Hard Delete)
+    // or add the field to schema.prisma first
+    return await prisma.user.delete({
       where: { id },
-      data: { isDeleted: true },
     });
   }
 }
