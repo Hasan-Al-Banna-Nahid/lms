@@ -46,7 +46,7 @@ app.use("/api/v1/course", CourseRoutes);
 app.use("/api/v1/lesson", LessonRoutes);
 app.use("/api/v1", EnrollmentRoutes);
 app.use("/api/v1", AnalyticsRoutes);
-app.use("/api/v1", UserRoutes);
+app.use("/api/v1/users", UserRoutes);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({
