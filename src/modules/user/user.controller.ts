@@ -8,81 +8,62 @@ export class UserController {
     this.userService = userService;
   }
 
-  // 1. Fetch all users list
-  public getAllUsers = async (req: Request, res: Response): Promise<void> => {
+  public getAllUsers = async (req: Request, res: Response) => {
     try {
       const result = await this.userService.getAllUsers(req.query);
-
-      res.status(200).json({
-        success: true,
-        message: "Users retrieved successfully",
-        data: result,
-      });
+      res.status(200).json({ success: true, data: result });
     } catch (err: any) {
-      res.status(400).json({
-        success: false,
-        message: err.message,
-      });
+      res.status(400).json({ success: false, message: err.message });
     }
   };
 
-  // 2. Create Admin Account
-  public createAdmin = async (req: Request, res: Response): Promise<void> => {
+  public createAdmin = async (req: Request, res: Response) => {
     try {
       const result = await this.userService.createAdmin(req.body);
-
-      res.status(201).json({
-        success: true,
-        message: "Admin account created successfully",
-        data: result,
-      });
+      res
+        .status(201)
+        .json({ success: true, message: "Admin created", data: result });
     } catch (err: any) {
-      res.status(400).json({
-        success: false,
-        message: err.message,
-      });
+      res.status(400).json({ success: false, message: err.message });
     }
   };
 
-  // 3. Toggle User Status (Active/Inactive)
-  public toggleStatus = async (req: Request, res: Response): Promise<void> => {
+  public toggleStatus = async (req: Request, res: Response) => {
     try {
       const result = await this.userService.manageUserStatus(
         req.params.id,
         req.body.status,
       );
-
-      res.status(200).json({
-        success: true,
-        message: "User status updated",
-        data: result,
-      });
+      res
+        .status(200)
+        .json({ success: true, message: "Status updated", data: result });
     } catch (err: any) {
-      res.status(400).json({
-        success: false,
-        message: err.message,
-      });
+      res.status(400).json({ success: false, message: err.message });
     }
   };
 
-  // 4. Soft Delete User
-  public deleteUser = async (req: Request, res: Response): Promise<void> => {
+  public changeRole = async (req: Request, res: Response) => {
     try {
-      // Assuming req.user is populated by 'protect' middleware
-      const adminRole = (req as any).user?.role;
-
-      await this.userService.deleteUserAccount(adminRole, req.params.id);
-
-      res.status(200).json({
-        success: true,
-        message: "User deleted successfully",
-        data: null,
-      });
+      const result = await this.userService.manageUserRole(
+        req.params.id,
+        req.body.role,
+      );
+      res
+        .status(200)
+        .json({ success: true, message: "Role updated", data: result });
     } catch (err: any) {
-      res.status(400).json({
-        success: false,
-        message: err.message,
-      });
+      res.status(400).json({ success: false, message: err.message });
+    }
+  };
+
+  public deleteUser = async (req: Request, res: Response) => {
+    try {
+      await this.userService.deleteUserAccount(req.params.id);
+      res
+        .status(200)
+        .json({ success: true, message: "User deleted successfully" });
+    } catch (err: any) {
+      res.status(400).json({ success: false, message: err.message });
     }
   };
 }

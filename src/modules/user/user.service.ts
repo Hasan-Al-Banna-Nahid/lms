@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { UserRepository } from "./user.repository";
+import { UserStatus, UserRole } from "../../../generated/prisma/client";
 
 export class UserService {
   private repository: UserRepository;
@@ -13,23 +14,50 @@ export class UserService {
   }
 
   public async createAdmin(payload: any) {
-    // Check if user already exists
     const hashedPassword = await bcrypt.hash(payload.password, 12);
     const adminData = {
       ...payload,
       password: hashedPassword,
-      role: "ADMIN",
-      status: "ACTIVE", // Set default status
+      role: "ADMIN" as UserRole,
+      status: "ACTIVE" as UserStatus,
     };
     return await this.repository.createUser(adminData);
   }
 
   public async manageUserStatus(userId: string, status: string) {
-    return await this.repository.updateUserStatus(userId, status);
+    const validStatuses = Object.values(UserStatus);
+    if (!validStatuses.includes(status as any)) {
+      throw new Error(`Invalid status. Use: ${validStatuses.join(", ")}`);
+    }
+
+    const user = await this.repository.getUserById(userId);
+    if (!user) throw new Error("User not found");
+    if (user.role === "SUPER_ADMIN")
+      throw new Error("Cannot change status of SUPER_ADMIN");
+
+    return await this.repository.updateUser(userId, {
+      status: status as UserStatus,
+    });
   }
 
-  public async deleteUserAccount(adminRole: string, targetUserId: string) {
-    // Logic: Prevent non-super-admins from deleting certain roles if needed
+  public async manageUserRole(userId: string, role: string) {
+    const validRoles = Object.values(UserRole);
+    if (!validRoles.includes(role as any)) {
+      throw new Error(`Invalid role. Use: ${validRoles.join(", ")}`);
+    }
+
+    const user = await this.repository.getUserById(userId);
+    if (!user) throw new Error("User not found");
+    if (user.role === "SUPER_ADMIN")
+      throw new Error("Cannot change role of SUPER_ADMIN");
+
+    return await this.repository.updateUser(userId, { role: role as UserRole });
+  }
+
+  public async deleteUserAccount(targetUserId: string) {
+    const user = await this.repository.getUserById(targetUserId);
+    if (user?.role === "SUPER_ADMIN")
+      throw new Error("Cannot delete SUPER_ADMIN");
     return await this.repository.softDeleteUser(targetUserId);
   }
 }

@@ -5,29 +5,34 @@ import { UserRepository } from "./user.repository";
 import { protect, restrictTo } from "../../middlewares/auth.middleware";
 
 const router = express.Router();
-
-const userRepository = new UserRepository();
-const userService = new UserService(userRepository);
-const userController = new UserController(userService);
-
-// 1. Get all users for Management Table
-router.get("/", protect, restrictTo("SUPER_ADMIN"), (req, res) =>
-  userController.getAllUsers(req, res),
+const userController = new UserController(
+  new UserService(new UserRepository()),
 );
 
-// 2. Create Admin (Matching frontend path: /users/create-admin)
-router.post("/create-admin", protect, restrictTo("SUPER_ADMIN"), (req, res) =>
-  userController.createAdmin(req, res),
+router.get("/", protect, restrictTo("SUPER_ADMIN"), userController.getAllUsers);
+router.post(
+  "/create-admin",
+  protect,
+  restrictTo("SUPER_ADMIN"),
+  userController.createAdmin,
 );
-
-// 3. Update User Status (Toggle Active/Inactive)
-router.patch("/status/:id", protect, restrictTo("SUPER_ADMIN"), (req, res) =>
-  userController.toggleStatus(req, res),
+router.patch(
+  "/status/:id",
+  protect,
+  restrictTo("SUPER_ADMIN"),
+  userController.toggleStatus,
 );
-
-// 4. Soft Delete User
-router.delete("/:id", protect, restrictTo("SUPER_ADMIN", "ADMIN"), (req, res) =>
-  userController.deleteUser(req, res),
+router.patch(
+  "/change-role/:id",
+  protect,
+  restrictTo("SUPER_ADMIN"),
+  userController.changeRole,
+);
+router.delete(
+  "/:id",
+  protect,
+  restrictTo("SUPER_ADMIN", "ADMIN"),
+  userController.deleteUser,
 );
 
 export const UserRoutes = router;

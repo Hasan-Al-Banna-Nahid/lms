@@ -1,14 +1,18 @@
 import { prisma } from "../../lib/prisma";
+import { UserStatus, UserRole } from "../../../generated/prisma/client";
 
 export class UserRepository {
   public async createUser(data: any) {
     return await prisma.user.create({ data });
   }
 
+  public async getUserById(id: string) {
+    return await prisma.user.findUnique({ where: { id } });
+  }
+
   public async getAllUsers(filters: any) {
     return await prisma.user.findMany({
-      // Remove isDeleted if it's not in your schema.prisma
-      where: { ...filters },
+      where: { ...filters, isDeleted: false },
       select: {
         id: true,
         firstName: true,
@@ -21,18 +25,20 @@ export class UserRepository {
     });
   }
 
-  public async updateUserStatus(id: string, status: string) {
+  public async updateUser(
+    id: string,
+    data: { status?: UserStatus; role?: UserRole },
+  ) {
     return await prisma.user.update({
       where: { id },
-      data: { status: status as any },
+      data,
     });
   }
 
   public async softDeleteUser(id: string) {
-    // If isDeleted doesn't exist, use delete (Hard Delete)
-    // or add the field to schema.prisma first
-    return await prisma.user.delete({
+    return await prisma.user.update({
       where: { id },
+      data: { isDeleted: true },
     });
   }
 }
